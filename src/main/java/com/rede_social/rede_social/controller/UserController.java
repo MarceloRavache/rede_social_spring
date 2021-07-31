@@ -12,34 +12,37 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Mono<User> createUser (@Valid @RequestBody User user){
-        return userRepository.save(user);
+    public UserController(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
 
-    @GetMapping("/users")
-    @ResponseStatus(HttpStatus.OK)
-    public Flux<User> getUsers (){
+    @GetMapping
+    public Flux<User> getUsers(){
         return userRepository.findAll();
     }
 
-    @GetMapping("/users/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
     public Mono<ResponseEntity<User>> getUser (@PathVariable (value = "id") String id){
         return userRepository.findById(id)
                 .map(saveUser -> ResponseEntity.ok(saveUser))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/users/{id}")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<User> createUser (@RequestBody User user){
+        return userRepository.save(user);
+    }
+
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<ResponseEntity<User>> updateUser (@PathVariable (value = "id") String id, @Valid @RequestBody User user){
+    public Mono<ResponseEntity<User>> updateUser (@PathVariable (value = "id") String id, @RequestBody User user){
         return userRepository.findById(id)
                 .flatMap(existUser -> {
                     existUser.setEmail(user.getEmail());
@@ -48,7 +51,7 @@ public class UserController {
                 .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<ResponseEntity<Void>> deleteUser (@PathVariable (value = "id") String id){
         return userRepository.findById(id)
