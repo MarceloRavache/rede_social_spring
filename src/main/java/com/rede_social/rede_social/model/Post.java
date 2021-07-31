@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
-@Document(collation = "posts")
+@Document
 public class Post {
     @Id
     private String id;
