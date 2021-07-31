@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Document(collation = "likes")
+@Document
 public class Like {
 
     @Id
